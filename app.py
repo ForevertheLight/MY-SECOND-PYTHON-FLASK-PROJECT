@@ -4,21 +4,21 @@ app=Flask(__name__)
 
 #In memory store
 Stock=[
-    # {"id": 1, "name": "Rice", "quantity": 10, "unit_price": 65000,
-    #   "total_price": 650000, "description": "50kg bag of rice"}
+     {"id": 1, "name": "Rice", "quantity": 10, "unit_price": 65000,
+       "total_price": 650000, "description": "50kg bag of rice"}
 ]
 Stock_Counter=1
 
 #retrieve all stocks
-@app.route("/retrieve/stocks",methods=['GET'])
-def retrieve_stocks():
+@app.route("/retrieve/stocks/<int:Stock_ID>",methods=['GET'])
+def retrieve_stocks(Stock_ID):
     if not Stock:
         return "Empty Stock"
     return Stock
 
 #Add a New Stock
-@app.route("/create/stocks",methods=['POST'])
-def create_new_stock():
+@app.route("/create/stocks/<int:Stock_ID>",methods=['POST'])
+def create_new_stock(Stock_ID):
     global Stock_Counter
     data=request.get_json()
 
