@@ -87,7 +87,6 @@ def create_new_stock(Stock_ID):
 
     # Add the new stock item to the in-memory list
     Stock.append(New_stock)
-    Stock_Counter+=1
 
     # Return the newly added stock as a response
     return jsonify({"Success", f"New Item added Successfully '{New_stock}' " })
