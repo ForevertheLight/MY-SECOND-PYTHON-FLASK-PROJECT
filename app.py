@@ -9,8 +9,8 @@ app = Flask(__name__)
 # A list that stores stock information in memory
 # (acts like a temporary database)
 Stock = [
-    {"id": 1, "name": "Rice", "quantity": 10, "unit_price": 65000,
-     "total_price": 650000, "description": "50kg bag of rice"}
+    # {"id": 1, "name": "Rice", "quantity": 10, "unit_price": 65000,
+    #  "total_price": 650000, "description": "50kg bag of rice"}
 ]
 
 # A simple counter for tracking stock IDs (not used much here)
@@ -41,6 +41,13 @@ def create_new_stock(Stock_ID):
     # Extract JSON data from the request body
     data = request.get_json()
 
+    #Validate Required fields 
+    if not data or "name" not in data or "unit_price" not in data or "quantity" not in data:
+        return jsonify({
+            "Status":"Error",
+            "Message":"Missing Required Fields: Name, Quantity, Unit_price"
+            }),400
+    
     # Create a new stock dictionary from the input data
     New_stock = {
         "id": len(Stock) + 1,  # Automatically generate new ID
