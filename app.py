@@ -49,7 +49,7 @@ def create_new_stock(Stock_ID):
             }),400
     
     #Validate Data Types
-    if not isinstance(data["name"],str) or not isinstance(data["unit price"],(int,float)) or not isinstance(data["quantity"],int):
+    if not isinstance(data["name"],str) or not isinstance(data["unit_price"],(int,float)) or not isinstance(data["quantity"],int):
         return jsonify({
             "Status":"Error",
             "Message":"Invalid Data Types for Fields: Name must be a String, Unit_Price must be an integer/float, Quantity must also be an Integer"
@@ -61,6 +61,14 @@ def create_new_stock(Stock_ID):
             "Status": "Error",
             "Message": "Name Field cannot be empty"
         }),400
+    
+    #Validate 'Quantity' and 'Unit_Price' are non Negative/Zero
+    if data['quantity'] <=0 or data['unit_price'] <=0:
+        return jsonify({
+            "Status":"Error",
+            "Message":"Quantity and Unit_Price must not be a Negative Value"
+        }),400
+
     
     # Create a new stock dictionary from the input data
     New_stock = {
