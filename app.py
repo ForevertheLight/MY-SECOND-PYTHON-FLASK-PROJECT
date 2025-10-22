@@ -55,6 +55,13 @@ def create_new_stock(Stock_ID):
             "Message":"Invalid Data Types for Fields: Name must be a String, Unit_Price must be an integer/float, Quantity must also be an Integer"
         }),400
     
+    #Ensure 'name' field is not empty
+    if not data["name"].strip():
+        return jsonify({
+            "Status": "Error",
+            "Message": "Name Field cannot be empty"
+        }),400
+    
     # Create a new stock dictionary from the input data
     New_stock = {
         "id": len(Stock) + 1,  # Automatically generate new ID
