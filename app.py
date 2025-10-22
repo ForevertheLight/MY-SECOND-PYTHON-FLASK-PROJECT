@@ -68,6 +68,11 @@ def create_new_stock(Stock_ID):
             "Status":"Error",
             "Message":"Quantity and Unit_Price must not be a Negative Value"
         }),400
+    
+    #Check for duplicate item names (Case-insensitive)
+    if any(Item['name'].lower() == data['name'].lower() for Item in Stock):
+        return jsonify({
+            "Error",f"Item with name: '{data['name']} already exists."}),400
 
     
     # Create a new stock dictionary from the input data
@@ -82,9 +87,10 @@ def create_new_stock(Stock_ID):
 
     # Add the new stock item to the in-memory list
     Stock.append(New_stock)
+    Stock_Counter+=1
 
     # Return the newly added stock as a response
-    return New_stock
+    return jsonify({"Success", f"New Item added Successfully '{New_stock}' " })
 
 
 # UPDATE: MODIFY EXISTING STOCK 
