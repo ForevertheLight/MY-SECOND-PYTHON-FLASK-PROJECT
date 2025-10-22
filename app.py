@@ -48,6 +48,13 @@ def create_new_stock(Stock_ID):
             "Message":"Missing Required Fields: Name, Quantity, Unit_price"
             }),400
     
+    #Validate Data Types
+    if not isinstance(data["name"],str) or not isinstance(data["unit price"],(int,float)) or not isinstance(data["quantity"],int):
+        return jsonify({
+            "Status":"Error",
+            "Message":"Invalid Data Types for Fields: Name must be a String, Unit_Price must be an integer/float, Quantity must also be an Integer"
+        }),400
+    
     # Create a new stock dictionary from the input data
     New_stock = {
         "id": len(Stock) + 1,  # Automatically generate new ID
