@@ -1,6 +1,15 @@
 # Import necessary modules from Flask
 from flask import Flask, request, jsonify
 
+from input_validations import (
+    validate_required_fields,
+    validate_data_types,
+    validate_non_empty_name,
+    validate_positive_values,
+    check_duplicate_name
+)
+
+
 # Create a Flask application instance
 app = Flask(__name__)
 
@@ -8,10 +17,7 @@ app = Flask(__name__)
 
 # A list that stores stock information in memory
 # (acts like a temporary database)
-Stock = [
-    # {"id": 1, "name": "Rice", "quantity": 10, "unit_price": 65000,
-    #  "total_price": 650000, "description": "50kg bag of rice"}
-]
+Stock = [ ]
 
 # A simple counter for tracking stock IDs (not used much here)
 Stock_Counter = 1
@@ -32,64 +38,38 @@ def retrieve_stocks(Stock_ID):
 
 # CREATE: ADD NEW STOCK 
 
-# Define a POST endpoint to create a new stock item
-@app.route("/create/stocks/<int:Stock_ID>", methods=['POST'])
-def create_new_stock(Stock_ID):
-    # Use 'global' to modify the global counter variable
-    global Stock_Counter
-
-    # Extract JSON data from the request body
+@app.route("/create/stocks", methods=['POST'])
+def create_new_stock():
     data = request.get_json()
 
-    #Validate Required fields 
-    if not data or "name" not in data or "unit_price" not in data or "quantity" not in data:
-        return jsonify({
-            "Status":"Error",
-            "Message":"Missing Required Fields: Name, Quantity, Unit_price"
-            }),400
-    
-    #Validate Data Types
-    if not isinstance(data["name"],str) or not isinstance(data["unit_price"],(int,float)) or not isinstance(data["quantity"],int):
-        return jsonify({
-            "Status":"Error",
-            "Message":"Invalid Data Types for Fields: Name must be a String, Unit_Price must be an integer/float, Quantity must also be an Integer"
-        }),400
-    
-    #Ensure 'name' field is not empty
-    if not data["name"].strip():
-        return jsonify({
-            "Status": "Error",
-            "Message": "Name Field cannot be empty"
-        }),400
-    
-    #Validate 'Quantity' and 'Unit_Price' are non Negative/Zero
-    if data['quantity'] <=0 or data['unit_price'] <=0:
-        return jsonify({
-            "Status":"Error",
-            "Message":"Quantity and Unit_Price must not be a Negative Value"
-        }),400
-    
-    #Check for duplicate item names (Case-insensitive)
-    if any(Item['name'].lower() == data['name'].lower() for Item in Stock):
-        return jsonify({
-            "Error",f"Item with name: '{data['name']} already exists."}),400
+    # Run all validations
+    errors = (
+        validate_required_fields(data)
+        or validate_data_types(data)
+        or validate_non_empty_name(data)
+        or validate_positive_values(data)
+        or check_duplicate_name(Stock, data["name"])
+    )
+    if errors:
+        return errors  # Return the first error found
 
-    
-    # Create a new stock dictionary from the input data
-    New_stock = {
-        "id": len(Stock) + 1,  # Automatically generate new ID
-        'name': data['name'],  # Stock name (required)
-        'quantity': data.get('quantity', 1),  # Default quantity = 1
-        'unit_price': data['unit_price'],  # Unit price (required)
-        'description': data.get('description', ''),  # Optional description
-        'total_price': data['quantity'] * data['unit_price']  # Auto-calculate total
+    # Create new stock entry
+    new_stock = {
+        "id": len(Stock) + 1,
+        "name": data["name"],
+        "quantity": data.get("quantity", 1),
+        "unit_price": data["unit_price"],
+        "description": data.get("description", ""),
+        "total_price": data["quantity"] * data["unit_price"],
     }
 
-    # Add the new stock item to the in-memory list
-    Stock.append(New_stock)
-
-    # Return the newly added stock as a response
-    return jsonify({"Success", f"New Item added Successfully '{New_stock}' " })
+    # Save and return response
+    Stock.append(new_stock)
+    return jsonify({
+        "status": "success",
+        "message": "New item added successfully",
+        "stock": new_stock
+    }), 201
 
 
 # UPDATE: MODIFY EXISTING STOCK 
