@@ -22,10 +22,10 @@ def validate_required_fields(data):
 
 # Check data types for each field
 def validate_data_types(data):
-    # If "name" is not a string → return error
+    # If "name" is not a string return error
     if not isinstance(data["name"], str): 
         return error("Name must be a string")
-    # If "unit_price" is not a number (int or float) → return error
+    # If "unit_price" is not a number (int or float) return error
     if not isinstance(data["unit_price"], (int, float)): 
         return error("Unit price must be a number")
     # If "quantity" is not an integer → return error
